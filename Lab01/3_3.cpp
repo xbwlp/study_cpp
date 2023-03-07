@@ -1,10 +1,8 @@
 #include<iostream>
 #include<cassert>
-#include<string>
-
 using namespace std;
+int defaultsize = 100;
 
-int defaultSize = 100;
 template <typename E> class List{
     private:
         void operator = (const List&){}
@@ -39,112 +37,136 @@ template <typename E> class List{
         virtual const E& getValue() const = 0;
 };
 
-template<typename E>
-class AList : public List<E> {
-    private:
-        int maxSize;
-        int listSize;
-        int curr; 
-        E* listArray;
+template <typename E>
+class Link{
     public:
-        AList(int size = defaultSize){
-            maxSize = size; 
-            listSize = curr = 0;
-            listArray = new E[maxSize];
+        E element;
+        Link *next;
+        Link(const E& elemval, Link *nextval = NULL){
+            element = elemval;
+            next = nextval;
         }
+        Link(Link *nextval = NULL){
+            next = nextval;
+        }
+};
 
-        ~AList() { delete [] listArray; }
-
+template<typename E>
+class LList : public List<E>{
+    private:
+        Link<E>* head;
+        Link<E>* curr;
+        Link<E>* tail;
+        int cnt;
+        void init(){
+            curr = tail = head = new Link<E>;
+            cnt = 0;
+        }
+        void removeall(){
+            while(head != NULL){
+                curr = head;
+                head = head -> next;
+                delete curr;
+            }
+        }
+    public:
+        LList(int size = defaultsize){
+            init();
+        }
+        ~LList(){
+            removeall();
+        }
+        void print() const;
         void clear(){
-            delete [] listArray;
-            listSize = curr = 0;
-            listArray = new E[maxSize];
-
+            removeall();
+            init();
         }
-
         void insert(const E& it){
-            assert(listSize < maxSize);
-            for (int i = listSize; i>curr; i--)
-                listArray[i] = listArray[i-1];
-            listArray[curr] = it;
-            listSize++;
+            curr->next = new Link<E>(it, curr->next);
+            if (tail==curr){
+                tail = curr->next;
+            }
+            cnt++;
         }
 
         void append(const E& it){
-            assert(listSize < maxSize);
-            listArray[listSize++] = it;
+            tail = tail -> next = new Link<E>(it,NULL);
+            cnt++;
         }
 
         E remove(){
-            assert((curr >= 0) && (curr < listSize));
-            E it = listArray[curr];
-            for (int i = curr; i<listSize-1; i++)
-                listArray[i] = listArray[i+1];
-            listSize--;
+            assert(curr->next != NULL);
+            E it = curr->next->element;
+            Link<E>* ltemp = curr->next;
+            if (curr->next = tail)
+                tail = curr;
+            curr->next = curr ->next -> next;
+            delete ltemp;
+            cnt--;
             return it;
         }
 
-        void moveToStart() {
-            curr = 0;
+        void moveToStart(){
+            curr = head;
         }
 
-        void moveToEnd(){curr = listSize-1;}
-        
+        void moveToEnd(){
+            curr = tail;
+        }
+
         void prev(){
-            if(curr != 0)
-                curr--;
-        }
-        
-        void next(){
-            if(curr<listSize)
-                curr++;
+            if (curr == head) return;
+            Link<E>*temp = head;
+            while(temp->next != curr){
+                temp = temp->next;
+            }
+            curr = temp;
         }
 
-        int length() const{return listSize;}
+        void next(){
+            if (curr != tail)
+                curr = curr->next;
+        }
+
+        int length() const{
+            return cnt;
+        }
 
         int currPos() const{
-            return curr;
+            Link<E>*temp = head;
+            int i;
+            for (i = 0; curr!=temp;i++)
+                temp = temp->next;
+            return i;
         }
 
         void moveToPos(int pos){
-            assert((pos>=0) && (pos<listSize));
-            curr = pos;
+            assert((pos>=0)&&(pos<=cnt));
+            curr = head;
+            for(int i =0; i<pos; i++)
+                curr  = curr->next;
         }
 
-        const E& getValue() const {
-            assert((curr >= 0) && (curr < listSize));
-            return listArray[curr];
+        const E& getValue() const{
+            assert(curr->next !=NULL);
+            return curr->next->element;
         }
 };
 
 
 int main(void){
-    int time = 0;
-    string temp;
-    string s[30];
-    while(cin>>temp){
-        s[time]=temp;
-        if(s[time]=="END")
-        {
-            break;
-        }
-        time++;
-        
-    }
 
     string str;
-    AList<int> a;
-    int times=0;
-    while(times<=time){
-        str = s[times++];
+    LList<int> a;
+    while(cin>>str){
         if (str == "insert"){
-            int T=atoi(s[times++].c_str());
-            int pos= atoi(s[times++].c_str());
-            
-            if (pos > a.length()){
+            int T;
+            int pos;
+            cin>>T>>pos;
+            if (pos >= a.length()){
                 while(T--){
                     int data;
-                    data = atoi(s[times++].c_str());
+                    cin>>data;
                     a.append(data);
                 }
             }else{
@@ -152,7 +174,7 @@ int main(void){
                 while(T--)
                 {
                     int data;
-                    data = atoi(s[times++].c_str());
+                    cin>>data;
                     a.insert(data);
                     a.next();
                 }
@@ -189,7 +211,7 @@ int main(void){
         {
             int T = a.length();
             int num;
-            num = atoi(s[times++].c_str());
+            cin>>num;
             a.moveToStart();
             while(T--){
                 if(num == a.getValue()){
@@ -218,4 +240,3 @@ int main(void){
     cin.sync();
     cin.get();
 };
-

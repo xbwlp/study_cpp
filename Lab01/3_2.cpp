@@ -119,32 +119,18 @@ class AList : public List<E> {
 
 
 int main(void){
-    int time = 0;
-    string temp;
-    string s[30];
-    while(cin>>temp){
-        s[time]=temp;
-        if(s[time]=="END")
-        {
-            break;
-        }
-        time++;
-        
-    }
 
     string str;
     AList<int> a;
-    int times=0;
-    while(times<=time){
-        str = s[times++];
+    while(cin>>str){
         if (str == "insert"){
-            int T=atoi(s[times++].c_str());
-            int pos= atoi(s[times++].c_str());
-            
-            if (pos > a.length()){
+            int T;
+            int pos;
+            cin>>T>>pos;
+            if (pos >= a.length()){
                 while(T--){
                     int data;
-                    data = atoi(s[times++].c_str());
+                    cin>>data;
                     a.append(data);
                 }
             }else{
@@ -152,7 +138,7 @@ int main(void){
                 while(T--)
                 {
                     int data;
-                    data = atoi(s[times++].c_str());
+                    cin>>data;
                     a.insert(data);
                     a.next();
                 }
@@ -189,7 +175,7 @@ int main(void){
         {
             int T = a.length();
             int num;
-            num = atoi(s[times++].c_str());
+            cin>>num;
             a.moveToStart();
             while(T--){
                 if(num == a.getValue()){
