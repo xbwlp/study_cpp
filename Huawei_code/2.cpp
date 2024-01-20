@@ -3,26 +3,29 @@
 using namespace std;
 
 int main() {
-    string a;
+    string a,c;
     char b;
-    
-    cin >> a >> b;
+    while(cin.peek()!='\n'){
+        cin>>c;
+        a = a+c;
+    }
+    cin>>b;
     int cnt = 0;
     
     for(int i = 0; i< a.size(); i++){
+        if (a[i]== b){
+            cnt++;
+        }
+        else if (b>='a'&&b<='z'&&b == a[i]+32){
+            cnt++;
 
-        cout<<(int)a[i];
-        if (a[i]== b || a[i]== b-32 || a[i]== b+32)
-            {
-                cnt++;
-                
-            }
+        }else if (b>='A'&&b<='Z'&&b == a[i]-32) {
+            cnt++;
+        }
+         ;
+        
         
     }
     cout<<cnt;
-
-    cin.clear();  //用来保证窗口不关闭的，交的时候删掉
-    cin.sync();
-    cin.get();
 }
 // 64 位输出请用 printf("%lld")
